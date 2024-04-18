@@ -5,6 +5,7 @@ import (
 	"github.com/rodrigo-brito/ninjabot/service"
 	"github.com/samber/lo"
 	log "github.com/sirupsen/logrus"
+	"time"
 )
 
 type OrderCondition struct {
@@ -15,6 +16,7 @@ type OrderCondition struct {
 
 type Scheduler struct {
 	pair            string
+	intervalTime    time.Duration
 	orderConditions []OrderCondition
 }
 
@@ -22,21 +24,21 @@ func NewScheduler(pair string) *Scheduler {
 	return &Scheduler{pair: pair}
 }
 
-func (s *Scheduler) SellWhen(size float64, condition func(df *ninjabot.Dataframe) bool) {
+func (s *Scheduler) AddSellCondition(size float64, condition func(df *ninjabot.Dataframe) bool) {
 	s.orderConditions = append(
 		s.orderConditions,
 		OrderCondition{Condition: condition, Size: size, Side: ninjabot.SideTypeSell},
 	)
 }
 
-func (s *Scheduler) BuyWhen(size float64, condition func(df *ninjabot.Dataframe) bool) {
+func (s *Scheduler) AddBuyCondition(size float64, condition func(df *ninjabot.Dataframe) bool) {
 	s.orderConditions = append(
 		s.orderConditions,
 		OrderCondition{Condition: condition, Size: size, Side: ninjabot.SideTypeBuy},
 	)
 }
 
-func (s *Scheduler) Update(df *ninjabot.Dataframe, broker service.Broker) {
+func (s *Scheduler) CheckCondition(df *ninjabot.Dataframe, broker service.Broker) {
 	s.orderConditions = lo.Filter[OrderCondition](s.orderConditions, func(oc OrderCondition, _ int) bool {
 		if oc.Condition(df) {
 			_, err := broker.CreateOrderMarket(oc.Side, s.pair, oc.Size)
