@@ -19,7 +19,6 @@ func NewStrategyController(pair string, strategy Strategy, broker service.Broker
 		Pair:     pair,
 		Metadata: make(map[string]model.Series[float64]),
 	}
-
 	return &Controller{
 		dataframe: dataframe,
 		strategy:  strategy,
