@@ -29,6 +29,6 @@ func TestSplitAssetQuote(t *testing.T) {
 
 func TestUpdatePairFile(t *testing.T) {
 	t.Skip() // it is not a test, just utility function to update pairs list
-	err := updateParisFile()
+	err := updatePairFile()
 	require.NoError(t, err)
 }
