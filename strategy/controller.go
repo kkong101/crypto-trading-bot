@@ -32,6 +32,7 @@ func (s *Controller) Start() {
 
 func (s *Controller) OnPartialCandle(candle model.Candle) {
 	if !candle.Complete && len(s.dataframe.Close) >= s.strategy.WarmupPeriod() {
+
 		if str, ok := s.strategy.(HighFrequencyStrategy); ok {
 			s.updateDataFrame(candle)
 			str.Indicators(s.dataframe)
